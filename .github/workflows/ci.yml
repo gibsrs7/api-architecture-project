@@ -54,10 +54,10 @@ jobs:
             cd ./api-architecture-project
             
             # Pull the latest versions of our images from Docker Hub
-            docker-compose pull
+            docker compose pull
             
             # Restart the application with the new images
             # Docker Compose is smart and will only restart containers whose images have changed
-            docker-compose up -d
+            docker compose up -d
             
             echo "Deployment to Azure was successful!"
