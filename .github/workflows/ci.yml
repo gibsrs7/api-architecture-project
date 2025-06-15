@@ -1,0 +1,44 @@
+# A descriptive name for our workflow. This shows up in the Actions tab on GitHub.
+name: Build and Push Product Service
+
+# This section defines the event that will trigger the workflow.
+# We want it to run on every push to our "main" branch.
+on:
+  push:
+    branches: [ "main" ]
+
+# This section defines the jobs that the workflow will run.
+# We only have one job for now, which we'll call 'build-and-push'.
+jobs:
+  build-and-push:
+    # This job will run on a fresh virtual machine hosted by GitHub.
+    # 'ubuntu-latest' is a great, standard choice.
+    runs-on: ubuntu-latest
+
+    # These are the individual steps the virtual machine will execute in sequence.
+    steps:
+      # Step 1: Checks out your repository's code onto the runner machine
+      # so the rest of the job can access your files.
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Logs in to Docker Hub. It securely uses the secrets
+      # you created in the repository settings.
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # Step 3: This is the main event. It builds the Docker image from
+      # your Dockerfile and pushes it to your Docker Hub repository.
+      - name: Build and push product-service
+        uses: docker/build-push-action@v5
+        with:
+          # The path to the directory containing the Dockerfile and source code.
+          context: ./microservices/product_service
+          # This 'push: true' flag tells the action to push after a successful build.
+          push: true
+          # The name and tag for our image on Docker Hub.
+          # Example: 'athena-mentor/product-service:latest'
+          tags: gibsonr7/product-service:latest
