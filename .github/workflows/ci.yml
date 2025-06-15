@@ -1,44 +1,63 @@
-# A descriptive name for our workflow. This shows up in the Actions tab on GitHub.
-name: Build and Push Product Service
+name: CI/CD Pipeline
 
-# This section defines the event that will trigger the workflow.
-# We want it to run on every push to our "main" branch.
 on:
   push:
     branches: [ "main" ]
 
-# This section defines the jobs that the workflow will run.
-# We only have one job for now, which we'll call 'build-and-push'.
 jobs:
+  # --- Job 1: Build and Push our Docker Images ---
   build-and-push:
-    # This job will run on a fresh virtual machine hosted by GitHub.
-    # 'ubuntu-latest' is a great, standard choice.
     runs-on: ubuntu-latest
-
-    # These are the individual steps the virtual machine will execute in sequence.
     steps:
-      # Step 1: Checks out your repository's code onto the runner machine
-      # so the rest of the job can access your files.
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Step 2: Logs in to Docker Hub. It securely uses the secrets
-      # you created in the repository settings.
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # Step 3: This is the main event. It builds the Docker image from
-      # your Dockerfile and pushes it to your Docker Hub repository.
-      - name: Build and push product-service
+      - name: Build and push product-service image
         uses: docker/build-push-action@v5
         with:
-          # The path to the directory containing the Dockerfile and source code.
           context: ./microservices/product_service
-          # This 'push: true' flag tells the action to push after a successful build.
           push: true
-          # The name and tag for our image on Docker Hub.
-          # Example: 'athena-mentor/product-service:latest'
           tags: gibsonr7/product-service:latest
+
+      # We've added a step for the details-service to make our CI complete
+      - name: Build and push details-service image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./microservices/details_service
+          push: true
+          tags: gibsonr7/details-service:latest
+
+  # --- Job 2: Our new Continuous Deployment job ---
+  deploy:
+    # This job will only start after the 'build-and-push' job has finished successfully
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to Azure VM
+        # This is a popular community action for running commands over SSH
+        uses: appleboy/ssh-action@master
+        with:
+          # We securely pull the server details from our GitHub Secrets
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          # This is the script that will be executed on our remote Azure server
+          script: |
+            # Navigate into the project directory we cloned earlier
+            cd ./api-architecture-project
+            
+            # Pull the latest versions of our images from Docker Hub
+            docker compose pull
+            
+            # Restart the application with the new images
+            # Docker Compose is smart and will only restart containers whose images have changed
+            docker compose up -d
+            
+            echo "Deployment to Azure was successful!"
