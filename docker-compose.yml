@@ -38,7 +38,7 @@ services:
       - "8000:8000"
       - "8001:8001"
     volumes:
-      - ./kong.yml:/usr/local/kong/declarative/kong.yml
+      - /home/azureuser/api-architecture-project/kong.yml:/usr/local/kong/declarative/kong.yml
     depends_on:
       database:
         condition: service_healthy
@@ -74,7 +74,7 @@ services:
   details_service:
     build:
       context: ./microservices/details_service
-      dockerfile: Dockerfile # We can reuse the same Dockerfile for now
+      dockerfile: Dockerfile
     # We need to tell it to run the *other* script
     container_name: compose-details-service
     networks:
