@@ -26,16 +26,19 @@ services:
     image: kong:latest
     container_name: compose-kong
     environment:
-      - KONG_DATABASE=postgres
-      - KONG_PG_HOST=database
-      - KONG_PG_PASSWORD=kongpass
-      - KONG_ADMIN_LISTEN=0.0.0.0:8001
-      - KONG_PROXY_LISTEN=0.0.0.0:8000
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: database
+      KONG_PG_PASSWORD: kongpass
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001
+      KONG_PROXY_LISTEN: 0.0.0.0:8000
+      KONG_DECLARATIVE_CONFIG: /usr/local/kong/declarative/kong.yml
     networks:
       - app-network
     ports:
       - "8000:8000"
       - "8001:8001"
+    volumes:
+      - ./kong.yml:/usr/local/kong/declarative/kong.yml
     depends_on:
       database:
         condition: service_healthy
