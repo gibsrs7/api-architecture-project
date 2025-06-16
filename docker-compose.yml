@@ -26,9 +26,7 @@ services:
     image: kong:latest
     container_name: compose-kong
     environment:
-      KONG_DATABASE: postgres
-      KONG_PG_HOST: database
-      KONG_PG_PASSWORD: kongpass
+      KONG_DATABASE: off
       KONG_ADMIN_LISTEN: 0.0.0.0:8001
       KONG_PROXY_LISTEN: 0.0.0.0:8000
       KONG_DECLARATIVE_CONFIG: /usr/local/kong/declarative/kong.yml
@@ -43,7 +41,7 @@ services:
       kong-migrations:
         condition: service_completed_successfully
     volumes:
-      - /home/azureuser/api-architecture-project/kong.yml:/usr/local/kong/declarative/kong.yml
+      - ./kong.yml:/usr/local/kong/declarative/kong.yml
 
   # 3. The Kong Migration Job
   kong-migrations:
