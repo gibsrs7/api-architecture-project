@@ -25,3 +25,8 @@ consumers:
   - username: my-first-app
     keyauth_credentials:
       - key: my-super-secret-key
+    plugins:
+      - name: rate-limiting
+        config:
+          minute: 5
+          policy: local
