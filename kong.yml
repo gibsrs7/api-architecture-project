@@ -1,27 +1,27 @@
 _format_version: "3.0"
 
 services:
-- name: product-api
-  url: http://compose-product-service:5001
-  routes:
-  - name: product-listing-route
-    paths:
-    - /products
-    strip_path: false
-  plugins:
-  - name: key-auth
+  - name: product-api
+    url: http://compose-product-service:5001
+    routes:
+      - name: product-listing-route
+        paths:
+          - /products
+        strip_path: false
+    plugins:
+      - name: key-auth
 
-- name: details-api
-  url: http://compose-details-service:5002
-  routes:
-  - name: product-details-route
-    paths:
-    - /products/
-    strip_path: false
-  plugins:
-  - name: key-auth
+  - name: details-api
+    url: http://compose-details-service:5002
+    routes:
+      - name: product-details-route
+        paths:
+          - /products/
+        strip_path: false
+    plugins:
+      - name: key-auth
 
 consumers:
-- username: my-first-app
-  keyauth_credentials:
-  - key: my-super-secret-key
+  - username: my-first-app
+    keyauth_credentials:
+      - key: my-super-secret-key
