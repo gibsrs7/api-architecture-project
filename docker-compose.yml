@@ -37,13 +37,13 @@ services:
     ports:
       - "8000:8000"
       - "8001:8001"
-    volumes:
-      - /home/azureuser/api-architecture-project/kong.yml:/usr/local/kong/declarative/kong.yml
     depends_on:
       database:
         condition: service_healthy
       kong-migrations:
         condition: service_completed_successfully
+    volumes:
+      - /home/azureuser/api-architecture-project/kong.yml:/usr/local/kong/declarative/kong.yml
 
   # 3. The Kong Migration Job
   kong-migrations:
