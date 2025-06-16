@@ -53,6 +53,9 @@ jobs:
             # Navigate into the project directory we cloned earlier
             cd ./api-architecture-project
             
+            # Pull the latest changes from the main branch of our repository
+            git pull origin main
+            
             # Pull the latest versions of our images from Docker Hub
             docker compose pull
             
