@@ -1,0 +1,11 @@
+# A global scrape configuration
+global:
+  scrape_interval: 15s # Scrape targets every 15 seconds.
+
+# A list of scrape configurations
+scrape_configs:
+  # The job name is added as a label to any time-series scraped from this config.
+  - job_name: 'kong'
+    # The list of targets to scrape.
+    static_configs:
+      - targets: ['compose-kong:8001'] # We scrape Kong's Admin API port

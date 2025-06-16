@@ -10,6 +10,7 @@ services:
         strip_path: false
     plugins:
       - name: key-auth
+      - name: prometheus
 
   - name: details-api
     url: http://compose-details-service:5002
@@ -20,6 +21,7 @@ services:
         strip_path: false
     plugins:
       - name: key-auth
+      - name: prometheus
 
 consumers:
   - username: my-first-app
